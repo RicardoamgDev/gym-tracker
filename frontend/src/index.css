@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; }
+body {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glow atlético de fondo (solo modo oscuro) */
+html[style*="color-scheme: dark"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(60vw 60vh at 12% -10%, rgba(163, 230, 53, 0.10), transparent 60%),
+    radial-gradient(55vw 55vh at 100% 0%, rgba(34, 211, 238, 0.08), transparent 55%);
+}
+
+/* Tipografía con más carácter */
+h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
+
+/* Animación suave para tarjetas */
+.gt-fade-in { animation: gtFade .28s ease both; }
+@keyframes gtFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Tarjetas con profundidad + hover */
+.ant-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.gt-stat .ant-card-body { padding: 18px 20px; }
+.gt-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  border-color: rgba(163, 230, 53, 0.45) !important;
+}
+
+/* Wordmark de marca */
+.gt-brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.gt-brand .gt-brand-text {
+  background: linear-gradient(90deg, #a3e635, #22d3ee);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* Scrollbar discreta */
+* { scrollbar-width: thin; scrollbar-color: rgba(163,230,53,0.35) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(163,230,53,0.30); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(163,230,53,0.55); }
+
+/* El contenido se mantiene por encima del glow */
+.ant-layout { position: relative; z-index: 1; }
