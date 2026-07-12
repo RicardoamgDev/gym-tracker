@@ -1,17 +1,17 @@
-// Sistema de diseño Gym Tracker v2.0 — "Atlético oscuro"
+// Sistema de diseño Gym Tracker v2.1 — "Grafito"
 import { theme as antdTheme } from 'antd'
 
-// Acento principal: lima eléctrico
-export const BRAND = '#a3e635'
-export const BRAND_STRONG = '#84cc16'
-export const BRAND_SOFT = 'rgba(163, 230, 53, 0.16)'
-export const ACCENT_2 = '#22d3ee' // cian secundario (gradientes/realces)
-export const INK = '#0b0d10'       // texto sobre superficies lima
+// Acento principal: slate/grafito (reemplaza el neón lima)
+export const BRAND = '#64748b'         // slate-500
+export const BRAND_STRONG = '#475569'  // slate-600
+export const BRAND_SOFT = 'rgba(100, 116, 139, 0.16)'
+export const ACCENT_2 = '#94a3b8'      // slate-400 (realces/gradientes)
+export const INK = '#0b0d10'           // texto oscuro sobre superficies claras
 
 // Colores por grupo muscular (deben coincidir con MuscleGroupSeeder del backend)
 export const MUSCLE_COLORS = {
   'Pecho':        '#fb7185',
-  'Espalda':      '#22d3ee',
+  'Espalda':      '#38bdf8',
   'Piernas':      '#a78bfa',
   'Hombros':      '#fb923c',
   'Bíceps':       '#c084fc',
@@ -22,8 +22,8 @@ export const MUSCLE_COLORS = {
 }
 export const muscleColor = (name) => MUSCLE_COLORS[name] || BRAND
 
-// rgba a partir del lima, útil para heatmaps/realces
-export const brandAlpha = (a) => `rgba(163, 230, 53, ${a})`
+// rgba a partir del slate, útil para heatmaps/realces
+export const brandAlpha = (a) => `rgba(100, 116, 139, ${a})`
 
 // Tokens compartidos
 const shared = {
@@ -39,12 +39,12 @@ const shared = {
   fontWeightStrong: 700,
 }
 
-// Botón primario: lima con texto oscuro (look atlético), sin sombra azulada
+// Botón primario: slate con texto blanco (look grafito)
 const sharedComponents = {
-  Button: { primaryColor: INK, fontWeight: 700, primaryShadow: '0 6px 16px rgba(163,230,53,0.20)' },
+  Button: { primaryColor: '#ffffff', fontWeight: 700, primaryShadow: '0 6px 16px rgba(71,85,105,0.20)' },
   Statistic: { contentFontSize: 30 },
   Tabs: { inkBarColor: BRAND, itemSelectedColor: BRAND, titleFontSize: 15 },
-  Segmented: { itemSelectedBg: BRAND, itemSelectedColor: INK },
+  Segmented: { itemSelectedBg: BRAND, itemSelectedColor: '#ffffff' },
 }
 
 export const lightTheme = {
@@ -78,8 +78,8 @@ export const darkTheme = {
       darkItemBg: 'transparent',
       darkSubMenuItemBg: 'transparent',
       darkItemSelectedBg: BRAND_SOFT,
-      darkItemSelectedColor: BRAND,
-      darkItemHoverColor: BRAND,
+      darkItemSelectedColor: '#cbd5e1',
+      darkItemHoverColor: '#e2e8f0',
     },
   },
 }

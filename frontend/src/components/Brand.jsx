@@ -7,8 +7,8 @@ export default function Brand({ size = 16, showText = true, iconSize, style }) {
         <defs>
           <linearGradient id="gtBrandGrad" x1="0" y1="0" x2="24" y2="24"
             gradientUnits="userSpaceOnUse">
-            <stop stopColor="#a3e635" />
-            <stop offset="1" stopColor="#22d3ee" />
+            <stop stopColor="#94a3b8" />
+            <stop offset="1" stopColor="#64748b" />
           </linearGradient>
         </defs>
         <g fill="url(#gtBrandGrad)">

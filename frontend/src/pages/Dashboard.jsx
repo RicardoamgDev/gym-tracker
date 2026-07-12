@@ -72,7 +72,7 @@ export default function Dashboard() {
         </Col>
         <Col xs={12} md={6}>
           <Card className="gt-stat gt-lift" styles={{ body: { display: 'flex', gap: 14, alignItems: 'center' } }}>
-            <StatChip icon={<BarsOutlined />} tint="#22d3ee" />
+            <StatChip icon={<BarsOutlined />} tint="#64748b" />
             <Statistic title="Series totales" value={totalSets} />
           </Card>
         </Col>
@@ -113,7 +113,7 @@ export default function Dashboard() {
                   <Tooltip formatter={(v) => [`${Math.round(v)} kg`, 'Volumen']} />
                   <Bar dataKey="volume" radius={[6, 6, 0, 0]}>
                     {weekly.map((_, i) => (
-                      <Cell key={i} fill={i === weekly.length - 1 ? BRAND : 'rgba(163,230,53,0.32)'} />
+                      <Cell key={i} fill={i === weekly.length - 1 ? BRAND : 'rgba(100,116,139,0.32)'} />
                     ))}
                   </Bar>
                 </BarChart>

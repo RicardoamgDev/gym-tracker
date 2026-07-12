@@ -31,7 +31,7 @@ export default function CalendarView() {
     const info = byDate[d]
     if (!info) return null
     const ratio = Math.min(1, info.volume / maxVol)
-    const bg = `rgba(163, 230, 53, ${0.18 + ratio * 0.62})`
+    const bg = `rgba(100, 116, 139, ${0.18 + ratio * 0.62})`
     return (
       <Tooltip title={`${info.sets} series · ${Math.round(info.volume)} kg`}>
         <div style={{ background: bg, borderRadius: 8, height: 36, display: 'flex',

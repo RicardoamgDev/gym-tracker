@@ -16,3 +16,6 @@
 .DS_Store
 *.log
 .claude/
+
+# Temporales de FUSE (montaje)
+.fuse_hidden*

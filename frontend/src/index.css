@@ -15,8 +15,8 @@ html[style*="color-scheme: dark"] body::before {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(60vw 60vh at 12% -10%, rgba(163, 230, 53, 0.10), transparent 60%),
-    radial-gradient(55vw 55vh at 100% 0%, rgba(34, 211, 238, 0.08), transparent 55%);
+    radial-gradient(60vw 60vh at 12% -10%, rgba(148, 163, 184, 0.08), transparent 60%),
+    radial-gradient(55vw 55vh at 100% 0%, rgba(100, 116, 139, 0.06), transparent 55%);
 }
 
 /* Tipografía con más carácter */
@@ -34,7 +34,7 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
 .gt-lift:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
-  border-color: rgba(163, 230, 53, 0.45) !important;
+  border-color: rgba(100, 116, 139, 0.45) !important;
 }
 
 /* Wordmark de marca */
@@ -43,15 +43,15 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
   font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
 }
 .gt-brand .gt-brand-text {
-  background: linear-gradient(90deg, #a3e635, #22d3ee);
+  background: linear-gradient(90deg, #94a3b8, #64748b);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
 /* Scrollbar discreta */
-* { scrollbar-width: thin; scrollbar-color: rgba(163,230,53,0.35) transparent; }
+* { scrollbar-width: thin; scrollbar-color: rgba(100,116,139,0.35) transparent; }
 *::-webkit-scrollbar { width: 10px; height: 10px; }
-*::-webkit-scrollbar-thumb { background: rgba(163,230,53,0.30); border-radius: 8px; }
-*::-webkit-scrollbar-thumb:hover { background: rgba(163,230,53,0.55); }
+*::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.30); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.55); }
 
 /* El contenido se mantiene por encima del glow */
 .ant-layout { position: relative; z-index: 1; }

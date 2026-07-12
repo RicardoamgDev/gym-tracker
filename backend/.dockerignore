@@ -5,3 +5,4 @@ vendor
 .env.*
 storage/logs/*
 tests
+.fuse_hidden*
