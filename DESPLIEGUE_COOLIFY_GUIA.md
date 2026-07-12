@@ -35,12 +35,12 @@ no `127.0.0.1`.
 **¿Claude se conecta a Coolify por MCP?** No hay conector oficial en el registro de MCP.
 Coolify tiene API REST propia; el flujo estándar es el panel web (o `curl` a su API).
 
-**¿Qué gestor de paquetes usa el front?** **npm** (`package-lock.json`). El Dockerfile usa
-`npm ci --frozen`/`npm ci` para builds reproducibles. No hay pnpm en este proyecto.
+**¿Qué gestor de paquetes usa el front?** **pnpm** (`pnpm-lock.yaml`, v9.0). El Dockerfile usa
+`pnpm install --frozen-lockfile` con caché de store de BuildKit para builds rápidos y reproducibles.
 
 **¿De dónde salen los aceleradores de build?** (1) cache de capas Docker (copiar manifiestos
 antes que el código), (2) build multi-stage (imagen final liviana: solo Nginx + estáticos),
-(3) `npm ci` con lockfile. Todo aplicado abajo.
+(3) `pnpm install --frozen-lockfile` + store cacheado por BuildKit. Todo aplicado abajo.
 
 ---
 
@@ -167,23 +167,37 @@ RUN chmod -R ug+rw storage bootstrap/cache
 >    `www-data` deja el servidor sin levantar → "no available server". Para tareas de
 >    arranque, usar las variables `AUTORUN_*` (no un entrypoint propio).
 
-### `frontend/Dockerfile` (React + Vite, multi-stage, npm)
+### `frontend/Dockerfile` (React + Vite, multi-stage, pnpm)
 
 ```dockerfile
 FROM node:20-alpine AS build
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+# pnpm 9 vía corepack (el lockfile es v9.0)
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+# store de pnpm cacheado por BuildKit -> instalaciones muy rápidas en rebuilds
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
-RUN npm run build
+RUN pnpm run build
 
 FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 ```
+
+> **pnpm.** El front usa pnpm (`pnpm-lock.yaml`, lockfile v9.0). `package.json` incluye
+> `pnpm.onlyBuiltDependencies: [esbuild]` para que `vite build` pueda compilar esbuild.
+> No mezcles gestores: elimina `package-lock.json` del repo. El `--mount=type=cache` de
+> BuildKit (que Coolify usa) mantiene el store de pnpm entre builds → rebuilds mucho más rápidos.
+
+> **Dependencias directas.** Con pnpm el `node_modules` es estricto: todo lo que el código
+> importe debe estar en `package.json`. Por eso `@ant-design/icons` va declarado explícito
+> (antes funcionaba de rebote por ser dependencia de antd).
 
 > `VITE_API_URL` debe incluir `/api` porque el front lo usa tal cual:
 > `frontend/src/constants/baseUrl.js` → `import.meta.env.VITE_API_URL`.
@@ -273,29 +287,4 @@ Con Sanctum por token no necesitas `supports_credentials: true` ni dominios stat
 | Síntoma                                                        | Causa                                                       | Solución |
 |---------------------------------------------------------------|-------------------------------------------------------------|----------|
 | `composer install ... exit code 2`                            | Composer como `www-data` / extensiones del lock             | Multi-stage con `composer:2` + `--ignore-platform-reqs`, copiar `vendor` |
-| `npm ci ... lockfile mismatch`                                | `package-lock.json` desincronizado con `package.json`       | Regenerar el lock localmente (`npm install`) y commitear |
-| `docker compose up -d ... exit code 255`                      | Conflicto de puertos publicados                             | `expose:` en lugar de `ports:` |
-| API responde **503 / CORS Missing Allow Origin**              | Backend enrutado al puerto equivocado                       | `expose: 8080` (puerto real de serversideup) |
-| **"no available server"** en el dominio del backend           | ENTRYPOINT propio arrancaba s6 como `www-data`              | Quitar ENTRYPOINT; usar variables `AUTORUN_*` |
-| Login/registro fallan con **CORS** desde el front             | `allowed_origins` no incluye el dominio del front           | `FRONTEND_URL` en el compose + `config/cors.php` (§4) |
-| Front no llega a la API tras cambiar el dominio del backend   | `VITE_API_URL` se hornea en build                           | **Rebuild** del frontend (no basta reiniciar) |
-| Front pega a `/loginlogin` o rutas raras                      | `VITE_API_URL` sin `/api` o con `/` final                   | Usar `https://api.tudominio.cl/api` (sin slash final) |
-
----
-
-## 7. Seguridad
-
-- `APP_KEY` **nuevo** para producción (no reutilizar el del `.env` local).
-- Contraseñas de BD **fuertes y distintas** para `root` y el usuario de la app.
-- Nunca poner secretos en el `docker-compose.yaml` del repo: van solo en *Environment
-  Variables* de Coolify (el compose los referencia con `${VAR}`).
-- Proteger o restringir por IP el dominio de phpMyAdmin.
-- Cada usuario sólo ve sus propios ejercicios y entrenamientos (autorización por
-  `user_id` en el backend); verifica que las rutas de datos siguen bajo `auth:sanctum`.
-
----
-
-## 8. Despliegue continuo
-
-Con el webhook de GitHub activo, cada `git push` a `master` dispara auto-deploy:
-el backend re-ejecuta migraciones al arrancar (AUTORUN) y el frontend se reconstruye.
+|

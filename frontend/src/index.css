@@ -55,3 +55,117 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
 
 /* El contenido se mantiene por encima del glow */
 .ant-layout { position: relative; z-index: 1; }
+
+/* ============ Login / Registro (tarjeta partida) ============ */
+.gt-auth-wrap {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.gt-auth-card {
+  display: flex;
+  width: 100%; max-width: 820px; min-height: 540px;
+  background: #ffffff;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+.gt-auth-left {
+  flex: 1 1 46%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 28px 22px;
+  background: linear-gradient(165deg, #3b414d 0%, #2b313a 100%);
+  color: #fff; overflow: hidden;
+}
+.gt-auth-left .gt-brand { color: #fff; letter-spacing: 0.16em; }
+.gt-auth-left .gt-brand-text { -webkit-text-fill-color: #fff; color: #fff; background: none; }
+
+/* Personaje: cross-fade + slide entre normal (registro) y musculoso (login) */
+.gt-auth-hero-wrap {
+  position: relative; margin-top: auto; width: 100%;
+  min-height: 330px;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.gt-auth-hero { width: 100%; max-width: 290px; display: block; }
+.gt-auth-figure {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .5s ease, transform .55s cubic-bezier(.34, 1.4, .5, 1);
+}
+.gt-figure-register { transform: translateX(-38px) scale(.88); }
+.gt-figure-login    { transform: translateX(38px) scale(.88); }
+.gt-auth-hero-wrap[data-mode="register"] .gt-figure-register,
+.gt-auth-hero-wrap[data-mode="login"] .gt-figure-login {
+  opacity: 1; transform: translateX(0) scale(1); pointer-events: auto;
+}
+
+.gt-auth-right {
+  flex: 1 1 54%;
+  background: #ffffff;
+  padding: 42px 44px;
+  display: flex; flex-direction: column;
+}
+.gt-auth-logo { display: flex; justify-content: center; margin-bottom: 18px; }
+.gt-auth-logo svg g { fill: #3a3f49 !important; }
+
+.gt-auth-tabs {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid #e6e8eb;
+  margin-bottom: 28px;
+}
+.gt-auth-tabs button {
+  flex: 1; padding: 12px 0;
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 13px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #adb2b9; transition: color .2s ease;
+}
+.gt-auth-tabs button.active { color: #2b313a; }
+.gt-auth-underline {
+  position: absolute; bottom: -1px; left: 0;
+  width: 50%; height: 2px; background: #2b313a; border-radius: 2px;
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+}
+.gt-auth-tabs[data-mode="login"] .gt-auth-underline { transform: translateX(100%); }
+.gt-auth-tabs[data-mode="register"] .gt-auth-underline { transform: translateX(0); }
+
+.gt-auth-forms { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.gt-auth-right .ant-input-affix-wrapper,
+.gt-auth-right .ant-input {
+  background: #eef0f2; border: 1px solid transparent; border-radius: 8px;
+}
+.gt-auth-right .ant-input-affix-wrapper .ant-input { background: transparent; }
+.gt-auth-right .ant-input-affix-wrapper:hover,
+.gt-auth-right .ant-input-affix-wrapper-focused { background: #eef0f2; border-color: #2b313a; }
+.gt-auth-right .ant-input-prefix { color: #9aa0a8; margin-inline-end: 10px; }
+
+.gt-auth-right .gt-auth-btn.ant-btn {
+  margin-top: 6px;
+  background: #4a515c; border-color: #4a515c; color: #fff;
+  font-weight: 700; letter-spacing: 0.08em; box-shadow: none;
+}
+.gt-auth-right .gt-auth-btn.ant-btn:hover { background: #3b414d; border-color: #3b414d; }
+.gt-auth-forgot {
+  margin-top: 14px; text-align: center;
+  font-size: 12px; font-weight: 600; color: #adb2b9; cursor: pointer;
+}
+.gt-auth-forgot:hover { color: #2b313a; }
+
+.gt-auth-theme {
+  position: fixed; left: 22px; bottom: 22px;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; color: #2b313a; border: none; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 720px) {
+  .gt-auth-card { flex-direction: column; max-width: 420px; min-height: 0; }
+  .gt-auth-left { padding: 28px 24px 0; }
+  .gt-auth-hero-wrap { min-height: 172px; }
+  .gt-auth-hero { max-width: 150px; }
+  .gt-auth-right { padding: 30px 26px 36px; }
+}
