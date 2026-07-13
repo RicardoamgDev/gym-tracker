@@ -169,3 +169,40 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
   .gt-auth-hero { max-width: 150px; }
   .gt-auth-right { padding: 30px 26px 36px; }
 }
+
+/* ============ Responsive / móvil (≤767px) ============ */
+@media (max-width: 767px) {
+  /* Tarjetas más compactas */
+  .ant-card-body { padding: 16px !important; }
+  .ant-card-head { padding-inline: 16px !important; min-height: 44px; }
+
+  /* Cabecera de tarjeta: el "extra" baja a su propia fila y ocupa el ancho */
+  .ant-card-head-wrapper { flex-direction: column; align-items: stretch; gap: 10px; }
+  .ant-card-head-wrapper .ant-card-extra { width: 100%; margin-inline-start: 0 !important; }
+  .ant-card-extra .ant-select,
+  .ant-card-extra .ant-input,
+  .ant-card-extra .ant-input-affix-wrapper,
+  .ant-card-extra .ant-input-number { width: 100% !important; }
+  .ant-card-extra .ant-space { display: flex; flex-wrap: wrap; width: 100%; }
+  .ant-card-extra .ant-space-item { flex: 1 1 140px; }
+
+  /* Formularios inline: apilar y ancho completo (LogWorkout, Ejercicios) */
+  .ant-form-inline .ant-form-item {
+    width: 100%; margin-inline-end: 0; margin-bottom: 12px;
+  }
+  .ant-form-inline .ant-form-item:last-child { margin-bottom: 0; }
+  .ant-form-inline .ant-form-item .ant-select,
+  .ant-form-inline .ant-form-item .ant-input,
+  .ant-form-inline .ant-form-item .ant-input-affix-wrapper,
+  .ant-form-inline .ant-form-item .ant-input-number,
+  .ant-form-inline .ant-form-item .ant-picker { width: 100% !important; }
+  .ant-form-inline .ant-form-item .ant-btn { width: 100%; }
+
+  /* Tablas: scroll horizontal en vez de amontonarse */
+  .ant-table-content, .ant-table-body { overflow-x: auto !important; }
+  .ant-table table { min-width: 460px; }
+
+  /* Segmented a ancho completo (Progresión) */
+  .ant-segmented { width: 100%; }
+  .ant-segmented .ant-segmented-item { flex: 1; text-align: center; }
+}

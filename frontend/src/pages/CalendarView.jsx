@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Card, Calendar, Tooltip } from 'antd'
 import { Stats } from '../api/client.js'
 import { LoadingState, ErrorState } from '../components/States.jsx'
+import useIsMobile from '../hooks/useIsMobile.js'
 
 export default function CalendarView() {
+  const isMobile = useIsMobile()
   const [byDate, setByDate] = useState({})
   const [maxVol, setMaxVol] = useState(1)
   const [status, setStatus] = useState('loading')
@@ -48,7 +50,7 @@ export default function CalendarView() {
 
   return (
     <Card title="Calendario de actividad">
-      <Calendar fullscreen cellRender={cellRender} />
+      <Calendar fullscreen={!isMobile} cellRender={cellRender} />
     </Card>
   )
 }
