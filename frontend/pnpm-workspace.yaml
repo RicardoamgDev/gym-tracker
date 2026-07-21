@@ -1,0 +1,11 @@
+packages:
+  - .
+
+# pnpm 10+ lee la configuración desde aquí, no desde el campo "pnpm" de package.json.
+# Permite que esbuild ejecute su script de instalación (necesario para "vite build").
+allowBuilds:
+  esbuild: true
+
+# Cadena de suministro: rechazar paquetes publicados hace menos de 24h.
+# Declararlo aquí hace que el lockfile sea reproducible en local y en el build de Docker.
+minimumReleaseAge: 1440

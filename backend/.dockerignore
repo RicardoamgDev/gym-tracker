@@ -6,3 +6,4 @@ vendor
 storage/logs/*
 tests
 .fuse_hidden*
+_tmp_*

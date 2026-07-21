@@ -1,12 +1,13 @@
 FROM node:20-alpine AS build
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
-# pnpm 9 vía corepack (el lockfile es v9.0)
-RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+# Misma versión de pnpm que en local (ver "packageManager" en package.json)
+RUN npm install -g pnpm@11.11.0
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # store de pnpm cacheado por BuildKit -> instalaciones muy rápidas en rebuilds
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --store-dir /pnpm/store
 COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}

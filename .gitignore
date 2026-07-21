@@ -19,3 +19,4 @@
 
 # Temporales de FUSE (montaje)
 .fuse_hidden*
+_tmp_*
