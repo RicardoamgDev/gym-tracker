@@ -27,7 +27,10 @@ class WorkoutController extends Controller
 
         $workout = DB::transaction(function () use ($request, $data) {
             $workout = $request->user()->workouts()->create([
+                'name'             => $data['name'] ?? null,
                 'date'             => $data['date'],
+                'started_at'       => $data['started_at'] ?? null,
+                'ended_at'         => $data['ended_at'] ?? null,
                 'duration_minutes' => $data['duration_minutes'] ?? null,
                 'notes'            => $data['notes'] ?? null,
             ]);
@@ -45,7 +48,10 @@ class WorkoutController extends Controller
 
         DB::transaction(function () use ($workout, $data) {
             $workout->update([
+                'name'             => $data['name'] ?? null,
                 'date'             => $data['date'],
+                'started_at'       => $data['started_at'] ?? null,
+                'ended_at'         => $data['ended_at'] ?? null,
                 'duration_minutes' => $data['duration_minutes'] ?? null,
                 'notes'            => $data['notes'] ?? null,
             ]);
@@ -71,7 +77,10 @@ class WorkoutController extends Controller
     private function validateData(Request $request): array
     {
         return $request->validate([
+            'name'                 => 'nullable|string|max:120',
             'date'                 => 'required|date',
+            'started_at'           => 'nullable|date',
+            'ended_at'             => 'nullable|date|after_or_equal:started_at',
             'duration_minutes'     => 'nullable|integer|min:0|max:600',
             'notes'                => 'nullable|string',
             'sets'                 => 'required|array|min:1',

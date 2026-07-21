@@ -9,11 +9,10 @@ class ExerciseController extends Controller
 {
     public function index(Request $request)
     {
-        // Catálogo global (user_id null) + ejercicios propios del usuario.
+        // Solo los ejercicios del usuario. La plantilla global (user_id = null)
+        // no se expone: se copia a cada usuario al registrarse.
         return Exercise::query()
-            ->where(function ($q) use ($request) {
-                $q->whereNull('user_id')->orWhere('user_id', $request->user()->id);
-            })
+            ->where('user_id', $request->user()->id)
             ->with('muscleGroup')
             ->orderBy('name')
             ->get();
@@ -32,8 +31,8 @@ class ExerciseController extends Controller
 
     public function destroy(Request $request, Exercise $exercise)
     {
-        // Solo se pueden borrar ejercicios propios; los del catálogo global son de solo lectura.
-        abort_if($exercise->user_id === null, 403, 'Los ejercicios del catálogo no se pueden borrar.');
+        // Red de seguridad: la plantilla global no es borrable por nadie.
+        abort_if($exercise->user_id === null, 403, 'Ejercicio de plantilla, no borrable.');
         abort_unless($exercise->user_id === $request->user()->id, 403);
         $exercise->delete();
         return response()->noContent();

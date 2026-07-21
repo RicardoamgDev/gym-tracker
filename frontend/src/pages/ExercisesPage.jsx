@@ -47,8 +47,6 @@ export default function ExercisesPage() {
     (!groupFilter || e.muscle_group_id === groupFilter)
   ), [exercises, q, groupFilter])
 
-  const catalogCount = exercises.filter(e => e.user_id == null).length
-
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       <Card title="Nuevo ejercicio">
@@ -98,13 +96,7 @@ export default function ExercisesPage() {
             },
             { title: 'Unidad', dataIndex: 'unit', width: 80 },
             {
-              title: 'Origen', width: 110,
-              render: (_, r) => r.user_id == null
-                ? <Tag color={BRAND} style={{ color: '#0b0d10', fontWeight: 600 }}>Catálogo</Tag>
-                : <Tag>Mío</Tag>,
-            },
-            {
-              title: '', width: 50, render: (_, r) => r.user_id == null ? null : (
+              title: '', width: 50, render: (_, r) => (
                 <Popconfirm title="¿Borrar ejercicio?" onConfirm={async () => {
                   await Exercises.remove(r.id); load(); message.success('Borrado')
                 }}>
@@ -115,8 +107,7 @@ export default function ExercisesPage() {
           ]} />
       </Card>
 
-      <Card title="Nuevo grupo muscular"
-        extra={<span style={{ opacity: 0.55, fontSize: 12 }}>{catalogCount} ejercicios en el catálogo</span>}>
+      <Card title="Nuevo grupo muscular">
         <Form form={mgForm} layout="inline" onFinish={addGroup} initialValues={{ color: BRAND }}>
           <Form.Item name="name" rules={[{ required: true }]}>
             <Input placeholder="Nombre del grupo" />

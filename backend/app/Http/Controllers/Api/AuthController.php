@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Exercise;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,9 @@ class AuthController extends Controller
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // Cada usuario arranca con su propia copia del catálogo, editable y privada.
+        Exercise::copyCatalogTo($user->id);
 
         $token = $user->createToken('api')->plainTextToken;
 

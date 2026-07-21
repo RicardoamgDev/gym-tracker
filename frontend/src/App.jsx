@@ -1,7 +1,7 @@
 import { Layout, Menu, Spin, Button, Dropdown, Avatar, Switch, Grid } from 'antd'
 import {
   DashboardOutlined, PlusCircleOutlined, LineChartOutlined,
-  CalendarOutlined, AppstoreOutlined, LogoutOutlined, UserOutlined,
+  CalendarOutlined, AppstoreOutlined, LogoutOutlined, UserOutlined, HistoryOutlined,
   MoonFilled, SunFilled,
 } from '@ant-design/icons'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
@@ -10,6 +10,7 @@ import LogWorkout from './pages/LogWorkout.jsx'
 import Progression from './pages/Progression.jsx'
 import CalendarView from './pages/CalendarView.jsx'
 import ExercisesPage from './pages/ExercisesPage.jsx'
+import History from './pages/History.jsx'
 import Login from './pages/Login.jsx'
 import Brand from './components/Brand.jsx'
 import { BRAND, INK } from './theme/tokens.js'
@@ -22,6 +23,7 @@ const { Header, Content, Sider, Footer } = Layout
 const nav = [
   { key: '/', icon: <DashboardOutlined />, label: 'Resumen' },
   { key: '/log', icon: <PlusCircleOutlined />, label: 'Registrar' },
+  { key: '/history', icon: <HistoryOutlined />, label: 'Historial' },
   { key: '/progression', icon: <LineChartOutlined />, label: 'Progresión' },
   { key: '/calendar', icon: <CalendarOutlined />, label: 'Calendario' },
   { key: '/exercises', icon: <AppstoreOutlined />, label: 'Ejercicios' },
@@ -44,6 +46,7 @@ function Routed() {
     <Routes>
       <Route path="/" element={<Dashboard />} />
       <Route path="/log" element={<LogWorkout />} />
+      <Route path="/history" element={<History />} />
       <Route path="/progression" element={<Progression />} />
       <Route path="/calendar" element={<CalendarView />} />
       <Route path="/exercises" element={<ExercisesPage />} />

@@ -209,3 +209,17 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
 
 /* Fila del historial que se está editando */
 .gt-row-editing > td { background: rgba(100, 116, 139, 0.16) !important; }
+
+/* Filas táctiles del selector categoría -> ejercicio */
+.gt-pick-row {
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 8px !important;
+  border-radius: 10px;
+  transition: background .15s ease;
+}
+.gt-pick-row:active,
+.gt-pick-row:hover { background: rgba(100, 116, 139, 0.14); }
+
+/* Tarjeta de ejercicio dentro de la sesión */
+.gt-ex-card .ant-card-body { padding: 12px 14px; }
