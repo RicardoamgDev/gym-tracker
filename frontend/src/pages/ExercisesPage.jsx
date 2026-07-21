@@ -6,6 +6,7 @@ import {
 import { DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 import { Exercises, MuscleGroups } from '../api/client.js'
 import { BRAND } from '../theme/tokens.js'
+import { focusNextOnEnter } from '../utils/formNav.js'
 
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState([])
@@ -50,7 +51,8 @@ export default function ExercisesPage() {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       <Card title="Nuevo ejercicio">
-        <Form form={exForm} layout="inline" onFinish={addExercise} initialValues={{ unit: 'kg' }}>
+        <Form form={exForm} layout="inline" onFinish={addExercise} initialValues={{ unit: 'kg' }}
+          onKeyDown={focusNextOnEnter}>
           <Form.Item name="name" rules={[{ required: true }]}>
             <Input placeholder="Nombre (ej. Press banca)" style={{ width: 220 }} />
           </Form.Item>
@@ -108,7 +110,8 @@ export default function ExercisesPage() {
       </Card>
 
       <Card title="Nuevo grupo muscular">
-        <Form form={mgForm} layout="inline" onFinish={addGroup} initialValues={{ color: BRAND }}>
+        <Form form={mgForm} layout="inline" onFinish={addGroup} initialValues={{ color: BRAND }}
+          onKeyDown={focusNextOnEnter}>
           <Form.Item name="name" rules={[{ required: true }]}>
             <Input placeholder="Nombre del grupo" />
           </Form.Item>

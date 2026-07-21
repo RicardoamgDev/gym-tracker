@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useThemeMode } from '../context/ThemeContext.jsx'
 import { lightTheme } from '../theme/tokens.js'
 import Brand from '../components/Brand.jsx'
+import { focusNextOnEnter } from '../utils/formNav.js'
 
 // Mismo personaje (misma ropa), sólo cabeza calva + barba (sin ojos/cejas/boca).
 // Registrarse -> normal
@@ -101,7 +102,7 @@ export default function Login() {
           <ConfigProvider theme={lightTheme}>
             <div key={mode} className="gt-auth-forms gt-fade-in">
               {mode === 'login' ? (
-                <Form layout="vertical" onFinish={doLogin} requiredMark={false}>
+                <Form layout="vertical" onFinish={doLogin} requiredMark={false} onKeyDown={focusNextOnEnter}>
                   <Form.Item name="email" rules={[{ required: true, type: 'email', message: 'Email válido' }]}>
                     <Input size="large" prefix={<MailOutlined />} placeholder="Email" />
                   </Form.Item>
@@ -114,7 +115,7 @@ export default function Login() {
                   <div className="gt-auth-forgot">¿Olvidaste tu contraseña?</div>
                 </Form>
               ) : (
-                <Form layout="vertical" onFinish={doRegister} requiredMark={false}>
+                <Form layout="vertical" onFinish={doRegister} requiredMark={false} onKeyDown={focusNextOnEnter}>
                   <Form.Item name="name" rules={[{ required: true, message: 'Tu nombre' }]}>
                     <Input size="large" prefix={<UserOutlined />} placeholder="Nombre" />
                   </Form.Item>

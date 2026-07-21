@@ -13,6 +13,7 @@ import { Exercises, MuscleGroups, Workouts } from '../api/client.js'
 import { isThisWeek, workoutVolume, groupByExercise } from '../utils/week.js'
 import { BRAND } from '../theme/tokens.js'
 import { useAuth } from '../context/AuthContext.jsx'
+import { focusNextOnEnter } from '../utils/formNav.js'
 
 export default function LogWorkout() {
   const navigate = useNavigate()
@@ -488,7 +489,7 @@ export default function LogWorkout() {
         {/* Paso C: series del ejercicio */}
         {pickExercise && (
           <>
-            <Form form={setForm} layout="vertical" onFinish={addSet}>
+            <Form form={setForm} layout="vertical" onFinish={addSet} onKeyDown={focusNextOnEnter}>
               <div style={{ display: 'flex', gap: 10 }}>
                 <Form.Item name="weight" label="Peso (kg)" style={{ flex: 1 }}>
                   <InputNumber min={0} step={0.5} size="large" style={{ width: '100%' }} />
@@ -542,7 +543,7 @@ export default function LogWorkout() {
         okText="Crear" cancelText="Cancelar" destroyOnClose
       >
         <Form form={groupForm} layout="vertical" onFinish={createGroup}
-          initialValues={{ color: BRAND }} preserve={false}>
+          initialValues={{ color: BRAND }} preserve={false} onKeyDown={focusNextOnEnter}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
             <Input placeholder="Ej. Antebrazos" autoFocus />
           </Form.Item>
@@ -558,7 +559,7 @@ export default function LogWorkout() {
         okText="Crear" cancelText="Cancelar" destroyOnClose
       >
         <Form form={exForm} layout="vertical" onFinish={createExercise}
-          initialValues={{ unit: 'kg' }} preserve={false}>
+          initialValues={{ unit: 'kg' }} preserve={false} onKeyDown={focusNextOnEnter}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
             <Input placeholder="Ej. Press inclinado con mancuernas" autoFocus />
           </Form.Item>
