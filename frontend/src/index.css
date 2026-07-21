@@ -223,3 +223,30 @@ h1, h2, h3, h4, .ant-typography { letter-spacing: -0.01em; }
 
 /* Tarjeta de ejercicio dentro de la sesión */
 .gt-ex-card .ant-card-body { padding: 12px 14px; }
+
+/* ===== iOS: evitar el zoom automático al enfocar campos =====
+   Safari en iPhone hace zoom si la fuente del campo mide < 16px.
+   Subirla a 16px es la solución correcta; bloquear el zoom con
+   user-scalable=no perjudica la accesibilidad y Safari lo ignora. */
+@media (max-width: 767px) {
+  .ant-input,
+  .ant-input-number-input,
+  .ant-input-affix-wrapper > input.ant-input,
+  textarea.ant-input,
+  .ant-select-single .ant-select-selector,
+  .ant-select-selector .ant-select-selection-search-input,
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder,
+  .ant-picker-input > input {
+    font-size: 16px !important;
+  }
+
+  /* Sin zoom por doble toque en los controles táctiles */
+  .ant-btn,
+  .ant-list-item,
+  .ant-segmented-item,
+  .ant-steps-item,
+  .gt-pick-row {
+    touch-action: manipulation;
+  }
+}
