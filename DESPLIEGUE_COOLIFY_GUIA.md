@@ -170,7 +170,7 @@ RUN chmod -R ug+rw storage bootstrap/cache
 ### `frontend/Dockerfile` (React + Vite, multi-stage, pnpm)
 
 ```dockerfile
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 # Misma versión de pnpm que en local (ver "packageManager" en package.json)
@@ -190,6 +190,11 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 ```
+
+> **Node 22 obligatorio.** pnpm 11 exige `node >= 22.13`. Con `node:20-alpine` el
+> `npm install -g pnpm@11` pasa (npm solo avisa) pero `pnpm install` muere con exit 1 y
+> BuildKit no muestra el motivo. Si cambias la versión de pnpm, revisa antes su campo
+> `engines` (`npm view pnpm@X engines`).
 
 > **pnpm 11, fijado.** `package.json` declara `"packageManager": "pnpm@11.11.0"` y el
 > Dockerfile instala esa misma versión: local y CI resuelven idéntico. Toda la config de
@@ -362,6 +367,7 @@ Con Sanctum por token no necesitas `supports_credentials: true` ni dominios stat
 | Síntoma | Causa | Solución |
 |---|---|---|
 | `composer install ... exit code 2` | Composer como `www-data` / extensiones del lock | Multi-stage con `composer:2` + `--ignore-platform-reqs`, copiar `vendor` |
+| `pnpm install` exit 1 en Docker, sin más detalle | Imagen base con Node < 22.13 y pnpm 11 | Usar `node:22-alpine` |
 | `ERR_PNPM_IGNORED_BUILDS: esbuild` | pnpm 10+ bloquea scripts de instalación por defecto | `allowBuilds: {esbuild: true}` en `pnpm-workspace.yaml` |
 | `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` | Lockfile resuelto sin la política de antigüedad | Declarar `minimumReleaseAge` en el repo y regenerar el lock |
 | `The "pnpm" field in package.json is no longer read` | Config de pnpm en el sitio antiguo | Moverla a `pnpm-workspace.yaml` |
