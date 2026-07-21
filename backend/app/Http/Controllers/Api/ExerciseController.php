@@ -11,9 +11,12 @@ class ExerciseController extends Controller
     {
         // Solo los ejercicios del usuario. La plantilla global (user_id = null)
         // no se expone: se copia a cada usuario al registrarse.
+        // withCount('sets') permite al frontend mostrar solo los ejercicios
+        // que ya tienen registros (p. ej. en Progresión).
         return Exercise::query()
             ->where('user_id', $request->user()->id)
             ->with('muscleGroup')
+            ->withCount('sets')
             ->orderBy('name')
             ->get();
     }
