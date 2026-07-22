@@ -212,7 +212,12 @@ export default function LogWorkout() {
       date: start.format('YYYY-MM-DD'),
       started_at: start.format('YYYY-MM-DD HH:mm:ss'),
       ended_at: end.format('YYYY-MM-DD HH:mm:ss'),
-      duration_minutes: Math.max(0, end.diff(start, 'minute')),
+      // Si el borrador quedó abierto mucho tiempo la duración no es real:
+      // preferimos no inventarla (null) a mandar un dato falso.
+      duration_minutes: (() => {
+        const m = end.diff(start, 'minute')
+        return m >= 0 && m <= 1440 ? m : null
+      })(),
       notes: notes.trim() || null,
       sets: sets.map((s, i) => ({
         exercise_id: s.exercise_id, set_number: i + 1,
@@ -229,8 +234,12 @@ export default function LogWorkout() {
         message.success('Sesión guardada')
       }
       resetAll(); loadAll()
-    } catch {
-      message.error('Error al guardar')
+    } catch (e) {
+      // Mostramos el motivo real (validación del backend) en vez de un genérico
+      const errs = e.response?.data?.errors
+      const first = errs ? Object.values(errs)[0][0] : null
+      message.error(first || e.response?.data?.message || 'Error al guardar')
+      console.error('Fallo al guardar la sesión', e.response?.status, e.response?.data)
     } finally {
       setSaving(false)
     }

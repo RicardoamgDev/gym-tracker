@@ -81,7 +81,7 @@ class WorkoutController extends Controller
             'date'                 => 'required|date',
             'started_at'           => 'nullable|date',
             'ended_at'             => 'nullable|date|after_or_equal:started_at',
-            'duration_minutes'     => 'nullable|integer|min:0|max:600',
+            'duration_minutes'     => 'nullable|integer|min:0|max:1440',
             'notes'                => 'nullable|string',
             'sets'                 => 'required|array|min:1',
             'sets.*.exercise_id'   => 'required|exists:exercises,id',
