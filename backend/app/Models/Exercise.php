@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -35,13 +36,17 @@ class Exercise extends Model
             if (in_array($tpl->name, $own, true)) {
                 return;
             }
-            static::create([
-                'user_id'         => $userId,
-                'muscle_group_id' => $tpl->muscle_group_id,
-                'name'            => $tpl->name,
-                'unit'            => $tpl->unit,
-            ]);
-            $copied++;
+            try {
+                static::create([
+                    'user_id'         => $userId,
+                    'muscle_group_id' => $tpl->muscle_group_id,
+                    'name'            => $tpl->name,
+                    'unit'            => $tpl->unit,
+                ]);
+                $copied++;
+            } catch (UniqueConstraintViolationException) {
+                // Ya tiene uno igual salvo mayúsculas/acentos: se respeta el suyo.
+            }
         });
 
         return $copied;

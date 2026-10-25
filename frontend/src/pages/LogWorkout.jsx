@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Card, Form, Input, InputNumber, Button, Select, Steps, Drawer, List,
   Tag, Empty, message, Popconfirm, Modal, Space, Divider, Alert, ColorPicker,
@@ -6,11 +6,12 @@ import {
 import {
   PlusOutlined, DeleteOutlined, LeftOutlined, CheckOutlined,
   EditOutlined, ClockCircleOutlined, CalendarOutlined, RightOutlined,
+  HistoryOutlined, TrophyOutlined,
 } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { Exercises, MuscleGroups, Workouts } from '../api/client.js'
-import { isThisWeek, workoutVolume, groupByExercise } from '../utils/week.js'
+import { isThisWeek, workoutVolume, groupByExercise, exerciseHistory, bestSet } from '../utils/week.js'
 import { BRAND } from '../theme/tokens.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { focusNextOnEnter } from '../utils/formNav.js'
@@ -43,6 +44,9 @@ export default function LogWorkout() {
   const [pickExercise, setPickExercise] = useState(null)
   const [newExOpen, setNewExOpen] = useState(false)
   const [newGroupOpen, setNewGroupOpen] = useState(false)
+  const [creatingEx, setCreatingEx] = useState(false)
+  const creatingExRef = useRef(false)   // bloqueo síncrono: el estado tarda un render
+  const [showMoreHistory, setShowMoreHistory] = useState(false)
   const [setForm] = Form.useForm()
   const [exForm] = Form.useForm()
   const [groupForm] = Form.useForm()
@@ -144,16 +148,30 @@ export default function LogWorkout() {
     setPickExercise(ex)
     setPickerOpen(true)
   }
-  // Al entrar en un ejercicio, precargamos los valores de su última serie
+  // Historial del ejercicio abierto (sesiones anteriores, sin la que se edita)
+  const pickHistory = useMemo(
+    () => pickExercise ? exerciseHistory(history, pickExercise.id, editingId) : [],
+    [history, pickExercise, editingId],
+  )
+  const pickBest = useMemo(() => bestSet(pickHistory), [pickHistory])
+  useEffect(() => { setShowMoreHistory(false) }, [pickExercise])
+
+  // Al entrar en un ejercicio, precargamos su última serie de hoy o, si aún
+  // no hay, la primera serie de la última vez que se hizo.
   useEffect(() => {
     if (!pickerOpen || !pickExercise) return
     const last = [...sets].reverse().find(s => s.exercise_id === pickExercise.id)
+      ?? exerciseHistory(history, pickExercise.id, editingId)[0]?.sets[0]
     setForm.setFieldsValue({
       weight: last?.weight ?? null,
       reps: last?.reps ?? null,
       rpe: last?.rpe ?? null,
     })
   }, [pickerOpen, pickExercise])
+
+  const applyHistorySet = (s) => {
+    setForm.setFieldsValue({ weight: s.weight, reps: s.reps, rpe: s.rpe })
+  }
 
   const addSet = (v) => {
     setSets(prev => [...prev, {
@@ -187,6 +205,9 @@ export default function LogWorkout() {
   }
 
   const createExercise = async (v) => {
+    if (creatingExRef.current) return
+    creatingExRef.current = true
+    setCreatingEx(true)
     try {
       const created = await Exercises.create(v)
       const list = await Exercises.list()
@@ -198,7 +219,10 @@ export default function LogWorkout() {
       chooseExercise(full)
       message.success(`"${full.name}" creado`)
     } catch {
-      message.error('No se pudo crear (¿nombre repetido?)')
+      message.error('No se pudo crear el ejercicio')
+    } finally {
+      creatingExRef.current = false
+      setCreatingEx(false)
     }
   }
 
@@ -354,6 +378,15 @@ export default function LogWorkout() {
                           onClick={() => setSets(sets.filter(s => s.exercise_id !== g.exercise_id))} />
                       </Space>
                     </div>
+                    {(() => {
+                      const prev = exerciseHistory(history, g.exercise_id, editingId)[0]
+                      return prev && (
+                        <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>
+                          <HistoryOutlined /> Anterior ({dayjs(prev.date).format('DD/MM')}):{' '}
+                          {prev.sets.map(s => `${s.weight}×${s.reps}`).join(' · ')}
+                        </div>
+                      )
+                    })()}
                     {g.sets.map((s, i) => (
                       <div key={s.key} style={{ display: 'flex', alignItems: 'center',
                         justifyContent: 'space-between', padding: '6px 0',
@@ -498,6 +531,56 @@ export default function LogWorkout() {
         {/* Paso C: series del ejercicio */}
         {pickExercise && (
           <>
+            {pickHistory.length === 0 ? (
+              <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 12 }}>
+                <HistoryOutlined /> Primera vez con este ejercicio
+              </div>
+            ) : (
+              <div style={{ marginBottom: 16, padding: 12, borderRadius: 10,
+                background: 'rgba(128,128,128,.08)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'center', marginBottom: 8, gap: 8 }}>
+                  <span style={{ fontWeight: 600 }}>
+                    <HistoryOutlined /> Última vez · {dayjs(pickHistory[0].date).format('ddd DD/MM')}
+                  </span>
+                  {pickBest && (
+                    <span style={{ fontSize: 12, opacity: 0.75, whiteSpace: 'nowrap' }}>
+                      <TrophyOutlined /> {pickBest.weight} kg × {pickBest.reps}
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {pickHistory[0].sets.map((s, i) => (
+                    <Tag key={i} style={{ padding: '4px 10px', fontSize: 14,
+                      margin: 0, cursor: 'pointer' }} onClick={() => applyHistorySet(s)}>
+                      {s.weight} kg × {s.reps}{s.rpe ? ` @${s.rpe}` : ''}
+                    </Tag>
+                  ))}
+                </div>
+                <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>
+                  Toca una serie para copiar peso y reps
+                </div>
+
+                {pickHistory.length > 1 && (
+                  <>
+                    <Button type="link" size="small" style={{ paddingInline: 0, marginTop: 4 }}
+                      onClick={() => setShowMoreHistory(v => !v)}>
+                      {showMoreHistory ? 'Ocultar' : `Ver sesiones anteriores (${Math.min(pickHistory.length - 1, 5)})`}
+                    </Button>
+                    {showMoreHistory && pickHistory.slice(1, 6).map(w => (
+                      <div key={w.id} style={{ display: 'flex', gap: 8, fontSize: 13,
+                        padding: '4px 0', borderTop: '1px solid rgba(128,128,128,.15)' }}>
+                        <span style={{ opacity: 0.6, minWidth: 74 }}>
+                          {dayjs(w.date).format('ddd DD/MM')}
+                        </span>
+                        <span>{w.sets.map(s => `${s.weight}×${s.reps}`).join(' · ')}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+
             <Form form={setForm} layout="vertical" onFinish={addSet} onKeyDown={focusNextOnEnter}>
               <div style={{ display: 'flex', gap: 10 }}>
                 <Form.Item name="weight" label="Peso (kg)" style={{ flex: 1 }}>
@@ -565,6 +648,7 @@ export default function LogWorkout() {
       <Modal
         title="Nuevo ejercicio" open={newExOpen}
         onCancel={() => setNewExOpen(false)} onOk={() => exForm.submit()}
+        confirmLoading={creatingEx}
         okText="Crear" cancelText="Cancelar" destroyOnClose
       >
         <Form form={exForm} layout="vertical" onFinish={createExercise}

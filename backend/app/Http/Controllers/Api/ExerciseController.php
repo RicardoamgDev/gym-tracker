@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exercise;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
@@ -28,7 +29,20 @@ class ExerciseController extends Controller
             'name'            => 'required|string|max:150',
             'unit'            => 'nullable|in:kg,lb',
         ]);
-        $exercise = $request->user()->exercises()->create($data);
+        $data['name'] = trim($data['name']);
+
+        // Idempotente por nombre: un doble toque (o un reintento) devuelve el
+        // mismo ejercicio en vez de crear un duplicado. El índice único
+        // (user_id, name) cubre la carrera entre dos peticiones simultáneas.
+        $existing = $request->user()->exercises()->where('name', $data['name'])->first();
+        if ($existing) {
+            return $existing->load('muscleGroup');
+        }
+        try {
+            $exercise = $request->user()->exercises()->create($data);
+        } catch (UniqueConstraintViolationException) {
+            $exercise = $request->user()->exercises()->where('name', $data['name'])->firstOrFail();
+        }
         return $exercise->load('muscleGroup');
     }
 

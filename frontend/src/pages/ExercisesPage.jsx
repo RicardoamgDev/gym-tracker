@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Card, Table, Form, Input, Select, Button, Tag, message,
   Popconfirm, Space, ColorPicker,
@@ -15,6 +15,8 @@ export default function ExercisesPage() {
   const [groupFilter, setGroupFilter] = useState(null)
   const [exForm] = Form.useForm()
   const [mgForm] = Form.useForm()
+  const [creating, setCreating] = useState(false)
+  const creatingRef = useRef(false)   // bloqueo síncrono: el estado tarda un render
 
   const load = () => {
     Exercises.list().then(setExercises)
@@ -23,12 +25,19 @@ export default function ExercisesPage() {
   useEffect(load, [])
 
   const addExercise = async (v) => {
+    if (creatingRef.current) return
+    creatingRef.current = true
+    setCreating(true)
     try {
       await Exercises.create(v)
       message.success('Ejercicio creado')
       exForm.resetFields()
       load()
     } catch { message.error('Error') }
+    finally {
+      creatingRef.current = false
+      setCreating(false)
+    }
   }
 
   const addGroup = async (v) => {
@@ -66,7 +75,7 @@ export default function ExercisesPage() {
             ]} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">Crear</Button>
+            <Button type="primary" htmlType="submit" loading={creating}>Crear</Button>
           </Form.Item>
         </Form>
       </Card>
